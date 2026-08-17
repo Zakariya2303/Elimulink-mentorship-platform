@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="dash-body">
+<div class="dash-layout">
+
+  <aside class="dash-sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <a href="/" class="d-flex align-items-center gap-2">
+        <div class="logo-icon"><i class="bi bi-mortarboard-fill"></i></div>
+        <span class="logo-text">Elimu<span>Link</span></span>
+      </a>
+      <button class="sidebar-close d-lg-none" id="sidebarClose"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="sidebar-label">Main Menu</div>
+    <nav class="sidebar-nav">
+      <a href="/mentor/dashboard"  class="sidebar-link"><i class="bi bi-grid-1x2"></i><span>Dashboard</span></a>
+      <a href="/mentor/requests"   class="sidebar-link"><i class="bi bi-inbox"></i><span>Requests</span></a>
+      <a href="/mentor/sessions"   class="sidebar-link"><i class="bi bi-calendar2-check"></i><span>My Sessions</span></a>
+      <a href="/mentor/messages"   class="sidebar-link active"><i class="bi bi-chat-dots"></i><span>Messages</span></a>
+      <a href="/mentor/resources"  class="sidebar-link"><i class="bi bi-folder2-open"></i><span>Resources</span></a>
+    </nav>
+    <div class="sidebar-label mt-3">Account</div>
+    <nav class="sidebar-nav">
+      <a href="/mentor/profile"  class="sidebar-link"><i class="bi bi-person-circle"></i><span>My Profile</span></a>
+      <a href="/auth/logout"     class="sidebar-link sidebar-danger"><i class="bi bi-box-arrow-left"></i><span>Log Out</span></a>
+    </nav>
+    <div class="sidebar-user">
+      <div class="sidebar-avatar sidebar-avatar-mentor"><%= user.full_name.charAt(0).toUpperCase() %></div>
+      <div>
+        <div class="sidebar-user-name"><%= user.full_name %></div>
+        <div class="sidebar-user-role">Mentor</div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <main class="dash-main">
+    <div class="dash-topbar">
+      <div class="d-flex align-items-center gap-3">
+        <button class="topbar-toggle d-lg-none" id="sidebarOpen"><i class="bi bi-list"></i></button>
+        <div>
+          <h5 class="topbar-title mb-0">Messages</h5>
+          <p class="topbar-sub mb-0">Your conversations with students</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="dash-content">
+      <div class="row g-4" style="height:calc(100vh - 140px)">
+
+        <!-- Conversations list -->
+        <div class="col-md-4">
+          <div class="dash-card h-100" style="overflow-y:auto;">
+            <div class="dash-card-head">
+              <h6 class="dash-card-title">Conversations</h6>
+            </div>
+            <% if (conversations.length === 0) { %>
+              <div class="empty-state py-4">
+                <i class="bi bi-chat-dots"></i>
+                <p>No messages yet.</p>
+              </div>
+            <% } else { %>
+              <div class="convo-list">
+                <% conversations.forEach(function(c) { %>
+                  <a href="/mentor/messages/<%= c.other_id %>"
+                     class="convo-item <%= activeId == c.other_id ? 'active' : '' %>">
+                    <div class="convo-avatar"><%= c.other_name.charAt(0) %></div>
+                    <div class="convo-info">
+                      <div class="convo-name"><%= c.other_name %></div>
+                      <div class="convo-preview"><%= c.last_message %></div>
+                    </div>
+                    <% if (c.unread > 0) { %>
+                      <span class="convo-unread"><%= c.unread %></span>
+                    <% } %>
+                  </a>
+                <% }) %>
+              </div>
+            <% } %>
+          </div>
+        </div>
+
+        <!-- Chat area -->
+        <div class="col-md-8">
+          <div class="dash-card h-100 d-flex flex-column">
+            <% if (!activeId) { %>
+              <div class="empty-state my-auto">
+                <i class="bi bi-chat-dots"></i>
+                <p>Select a conversation to start messaging.</p>
+              </div>
+            <% } else { %>
+              <div class="dash-card-head">
+                <h6 class="dash-card-title"><%= activeName %></h6>
+              </div>
+              <div class="chat-messages" id="chatMessages">
+                <% messages.forEach(function(m) { %>
+                  <div class="chat-bubble <%= m.sender_id === user.id ? 'sent' : 'received' %>">
+                    <div class="bubble-text"><%= m.content %></div>
+                    <div class="bubble-time">
+                      <%= new Date(m.created_at).toLocaleTimeString('en-GB',
+                          { hour:'2-digit', minute:'2-digit' }) %>
+                    </div>
+                  </div>
+                <% }) %>
+              </div>
+              <form action="/mentor/messages/<%= activeId %>/send" method="POST"
+                    class="chat-input-area">
+                <input type="text" name="content"
+                       class="form-control custom-input"
+                       placeholder="Type a message..."
+                       style="padding-left:14px;" required autocomplete="off">
+                <button type="submit" class="chat-send-btn">
+                  <i class="bi bi-send-fill"></i>
+                </button>
+              </form>
+            <% } %>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/main.js"></script>
+<script>
+  const chatMessages = document.getElementById('chatMessages');
+  if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;
+</script>
+</body>
+</html>

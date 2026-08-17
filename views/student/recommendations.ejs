@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="dash-body">
+<div class="dash-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="dash-sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <a href="/" class="d-flex align-items-center gap-2">
+        <div class="logo-icon"><i class="bi bi-mortarboard-fill"></i></div>
+        <span class="logo-text">Elimu<span>Link</span></span>
+      </a>
+      <button class="sidebar-close d-lg-none" id="sidebarClose">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <div class="sidebar-label">Main Menu</div>
+    <nav class="sidebar-nav">
+      <a href="/student/dashboard"       class="sidebar-link"><i class="bi bi-grid-1x2"></i><span>Dashboard</span></a>
+      <a href="/student/mentors"         class="sidebar-link"><i class="bi bi-people"></i><span>Find Mentors</span></a>
+      <a href="/student/recommendations" class="sidebar-link active">
+        <i class="bi bi-stars"></i><span>AI Recommendations</span>
+        <span class="sidebar-badge" style="background:#f0a500;color:#0d3b2e;font-size:9px;">AI</span>
+      </a>
+      <a href="/student/requests"        class="sidebar-link"><i class="bi bi-send"></i><span>My Requests</span></a>
+      <a href="/student/sessions"        class="sidebar-link"><i class="bi bi-calendar2-check"></i><span>My Sessions</span></a>
+      <a href="/student/messages"        class="sidebar-link"><i class="bi bi-chat-dots"></i><span>Messages</span></a>
+      <a href="/student/resources"       class="sidebar-link"><i class="bi bi-folder2-open"></i><span>Resources</span></a>
+    </nav>
+    <div class="sidebar-label mt-3">Account</div>
+    <nav class="sidebar-nav">
+      <a href="/student/profile" class="sidebar-link"><i class="bi bi-person-circle"></i><span>My Profile</span></a>
+      <a href="/auth/logout"     class="sidebar-link sidebar-danger"><i class="bi bi-box-arrow-left"></i><span>Log Out</span></a>
+    </nav>
+    <div class="sidebar-user">
+      <div class="sidebar-avatar"><%= user.full_name.charAt(0).toUpperCase() %></div>
+      <div>
+        <div class="sidebar-user-name"><%= user.full_name %></div>
+        <div class="sidebar-user-role">Student</div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- MAIN -->
+  <main class="dash-main">
+
+    <div class="dash-topbar">
+      <div class="d-flex align-items-center gap-3">
+        <button class="topbar-toggle d-lg-none" id="sidebarOpen"><i class="bi bi-list"></i></button>
+        <div>
+          <h5 class="topbar-title mb-0">
+            <i class="bi bi-stars me-2" style="color:#f0a500;"></i>AI Mentor Recommendations
+          </h5>
+          <p class="topbar-sub mb-0">Mentors ranked by compatibility with your profile and career goals</p>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="topbar-user-chip">
+          <div class="topbar-avatar"><%= user.full_name.charAt(0).toUpperCase() %></div>
+          <span class="d-none d-md-inline"><%= user.full_name.split(' ')[0] %></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="dash-content">
+
+      <!-- AI BANNER -->
+      <div style="background:linear-gradient(135deg,#0d3b2e,#1a5c45);
+                  border-radius:16px;padding:28px 32px;margin-bottom:28px;
+                  display:flex;align-items:center;gap:24px;flex-wrap:wrap;">
+        <div style="width:56px;height:56px;border-radius:50%;
+                    background:rgba(240,165,0,0.2);border:2px solid rgba(240,165,0,0.4);
+                    display:flex;align-items:center;justify-content:center;
+                    font-size:26px;flex-shrink:0;">
+          🤖
+        </div>
+        <div style="flex:1;min-width:220px;">
+          <div style="font-size:17px;font-weight:800;color:white;margin-bottom:6px;">
+            ElimuLink AI Matching Engine
+          </div>
+          <div style="font-size:14px;color:rgba(255,255,255,0.75);line-height:1.6;">
+            The AI has analysed your profile — your course, career interests, and goals — and ranked every available mentor by how well they match what you are looking for. The higher the match score, the more compatible a mentor is with your specific career path.
+          </div>
+        </div>
+        <% if (!hasProfile) { %>
+          <a href="/student/profile"
+             style="background:#f0a500;color:#0d3b2e;padding:10px 20px;
+                    border-radius:10px;font-weight:700;font-size:13px;
+                    white-space:nowrap;text-decoration:none;flex-shrink:0;">
+            <i class="bi bi-pencil me-1"></i>Complete Profile for Better Matches
+          </a>
+        <% } %>
+      </div>
+
+      <!-- NO PROFILE WARNING -->
+      <% if (!hasProfile) { %>
+        <div style="background:#fffbeb;border:1.5px solid #fde68a;border-radius:12px;
+                    padding:18px 22px;margin-bottom:24px;display:flex;align-items:center;gap:14px;">
+          <i class="bi bi-exclamation-triangle-fill" style="font-size:22px;color:#b45309;flex-shrink:0;"></i>
+          <div>
+            <div style="font-weight:700;color:#92400e;margin-bottom:4px;">Your profile is incomplete</div>
+            <div style="font-size:13.5px;color:#b45309;">
+              The AI recommendation engine works best when your course and career interests are filled in.
+              <a href="/student/profile" style="color:#92400e;font-weight:700;text-decoration:underline;">
+                Update your profile now
+              </a>
+              to get more accurate mentor matches.
+            </div>
+          </div>
+        </div>
+      <% } %>
+
+      <!-- KEYWORDS DETECTED -->
+      <% if (studentKeywords && studentKeywords.length > 0) { %>
+        <div class="dash-card mb-4">
+          <div class="dash-card-head">
+            <h6 class="dash-card-title">
+              <i class="bi bi-tag me-2" style="color:#f0a500;"></i>
+              Keywords Detected from Your Profile
+            </h6>
+          </div>
+          <div style="padding:16px 22px;display:flex;flex-wrap:wrap;gap:8px;">
+            <% studentKeywords.forEach(function(kw) { %>
+              <span style="background:#f0fdf4;color:#0d3b2e;border:1px solid #d4e8df;
+                           padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;">
+                <%= kw %>
+              </span>
+            <% }) %>
+          </div>
+        </div>
+      <% } %>
+
+      <!-- RECOMMENDATIONS -->
+      <% if (recommendations.length === 0) { %>
+        <div class="dash-card">
+          <div class="empty-state py-5">
+            <i class="bi bi-people"></i>
+            <p>No mentors are currently available. Check back soon as more mentors join the platform.</p>
+            <a href="/student/profile" class="btn btn-primary-custom px-4">
+              Complete Your Profile
+            </a>
+          </div>
+        </div>
+      <% } else { %>
+
+        <div style="margin-bottom:16px;">
+          <span style="font-size:13px;color:var(--muted);font-weight:600;">
+            Showing <strong><%= recommendations.length %></strong> best matches for your profile
+          </span>
+        </div>
+
+        <div class="row g-4">
+          <% recommendations.forEach(function(mentor, index) { %>
+            <div class="col-md-6 col-xl-4">
+              <div class="mentor-card" style="position:relative;">
+
+                <!-- Rank badge -->
+                <div style="position:absolute;top:14px;right:14px;z-index:2;">
+                  <% if (index === 0) { %>
+                    <span style="background:#f0a500;color:#0d3b2e;font-size:11px;font-weight:800;
+                                 padding:3px 10px;border-radius:20px;">
+                      🏆 Best Match
+                    </span>
+                  <% } else if (index === 1) { %>
+                    <span style="background:#e2e8f0;color:#374151;font-size:11px;font-weight:700;
+                                 padding:3px 10px;border-radius:20px;">
+                      #2 Match
+                    </span>
+                  <% } else if (index === 2) { %>
+                    <span style="background:#fef3c7;color:#92400e;font-size:11px;font-weight:700;
+                                 padding:3px 10px;border-radius:20px;">
+                      #3 Match
+                    </span>
+                  <% } %>
+                </div>
+
+                <!-- Top -->
+                <div class="mentor-card-top">
+                  <div class="mentor-avatar">
+                    <%= mentor.full_name.charAt(0).toUpperCase() %>
+                  </div>
+                  <div class="mentor-card-info">
+                    <div class="mentor-card-name"><%= mentor.full_name %></div>
+                    <div class="mentor-card-role">
+                      <%= mentor.job_title || 'Professional' %>
+                      <% if (mentor.company) { %>&middot; <%= mentor.company %><% } %>
+                    </div>
+                    <% if (mentor.industry) { %>
+                      <span class="mentor-industry-tag"><%= mentor.industry %></span>
+                    <% } %>
+                  </div>
+                </div>
+
+                <!-- Body -->
+                <div class="mentor-card-body">
+
+                  <!-- AI Match Score Bar -->
+                  <div style="margin-bottom:14px;">
+                    <div style="display:flex;justify-content:space-between;
+                                align-items:center;margin-bottom:6px;">
+                      <span style="font-size:12px;font-weight:700;color:var(--muted);">
+                        AI Match Score
+                      </span>
+                      <span style="font-size:13px;font-weight:800;color:#0d3b2e;">
+                        <%= Math.min(Math.round((mentor.score / 10) * 100), 100) %>%
+                      </span>
+                    </div>
+                    <div style="background:#e2e8f0;border-radius:20px;height:8px;overflow:hidden;">
+                      <div style="height:100%;border-radius:20px;
+                                  width:<%= Math.min(Math.round((mentor.score / 10) * 100), 100) %>%;
+                                  background:linear-gradient(90deg,#1a5c45,#2d8a6b);
+                                  transition:width 0.6s ease;">
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Matched Keywords -->
+                  <% if (mentor.matchedKeywords && mentor.matchedKeywords.length > 0) { %>
+                    <div style="margin-bottom:10px;">
+                      <div style="font-size:11px;font-weight:700;color:var(--muted);
+                                  text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">
+                        Why this match
+                      </div>
+                      <div style="display:flex;flex-wrap:wrap;gap:4px;">
+                        <% mentor.matchedKeywords.slice(0,4).forEach(function(kw) { %>
+                          <span style="background:#f0fdf4;color:#0d3b2e;border:1px solid #d4e8df;
+                                       padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;">
+                            <%= kw %>
+                          </span>
+                        <% }) %>
+                      </div>
+                    </div>
+                  <% } %>
+
+                  <% if (mentor.expertise) { %>
+                    <p class="mentor-expertise">
+                      <i class="bi bi-lightning-charge me-1"></i>
+                      <%= mentor.expertise.length > 90
+                            ? mentor.expertise.substring(0, 90) + '...'
+                            : mentor.expertise %>
+                    </p>
+                  <% } %>
+
+                  <div class="mentor-meta">
+                    <% if (mentor.years_experience) { %>
+                      <span><i class="bi bi-briefcase me-1"></i><%= mentor.years_experience %> yrs exp</span>
+                    <% } %>
+                    <% if (mentor.university) { %>
+                      <span><i class="bi bi-building me-1"></i><%= mentor.university %></span>
+                    <% } %>
+                  </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="mentor-card-footer">
+                  <% if (alreadySent.includes(mentor.id)) { %>
+                    <button class="btn-request-sent" disabled>
+                      <i class="bi bi-check-circle me-1"></i>Request Sent
+                    </button>
+                  <% } else { %>
+                    <button class="btn-request"
+                            data-mentor-id="<%= mentor.id %>"
+                            data-mentor-name="<%= mentor.full_name %>"
+                            onclick="openRequestModal(this)">
+                      <i class="bi bi-send me-1"></i>Send Request
+                    </button>
+                  <% } %>
+                </div>
+
+              </div>
+            </div>
+          <% }) %>
+        </div>
+
+        <div class="text-center mt-4">
+          <a href="/student/mentors" style="color:var(--primary-light);font-size:14px;font-weight:600;">
+            <i class="bi bi-grid me-1"></i>View all available mentors instead
+          </a>
+        </div>
+
+      <% } %>
+
+    </div>
+  </main>
+</div>
+
+<!-- REQUEST MODAL -->
+<div class="modal fade" id="requestModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="border-radius:16px;border:none;">
+      <div class="modal-header" style="border-bottom:1px solid #e2e8f0;padding:20px 24px;">
+        <h5 class="modal-title fw-bold" id="modalTitle">Send Mentorship Request</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form id="requestForm" method="POST" action="">
+        <div class="modal-body" style="padding:24px;">
+          <p class="text-muted small mb-3">
+            Introduce yourself and tell
+            <span id="mentorNameSpan" class="fw-semibold"></span>
+            what kind of guidance you are looking for.
+          </p>
+          <div class="form-group-custom">
+            <label>Your Message</label>
+            <textarea name="message" rows="5"
+                      class="form-control custom-input"
+                      style="padding-left:14px;"
+                      placeholder="Hi, I am a final year student and I came across your profile through the ElimuLink AI recommendations. I would love to get your guidance on..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer" style="border-top:1px solid #e2e8f0;padding:16px 24px;">
+          <button type="button" class="btn btn-nav-outline" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary-custom px-4">
+            <i class="bi bi-send me-1"></i>Send Request
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/main.js"></script>
+<script>
+  function openRequestModal(button) {
+    const mentorId   = button.getAttribute('data-mentor-id');
+    const mentorName = button.getAttribute('data-mentor-name');
+    document.getElementById('requestForm').action = '/student/mentors/request/' + mentorId;
+    document.getElementById('mentorNameSpan').textContent = mentorName;
+    document.getElementById('modalTitle').textContent = 'Request Mentorship from ' + mentorName;
+    new bootstrap.Modal(document.getElementById('requestModal')).show();
+  }
+
+  // Animate match score bars on load
+  window.addEventListener('load', function() {
+    document.querySelectorAll('[data-width]').forEach(function(bar) {
+      bar.style.width = bar.getAttribute('data-width') + '%';
+    });
+  });
+</script>
+</body>
+</html>

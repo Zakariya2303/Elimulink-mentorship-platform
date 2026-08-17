@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="dash-body">
+<div class="dash-layout">
+
+  <aside class="dash-sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <a href="/" class="d-flex align-items-center gap-2">
+        <div class="logo-icon"><i class="bi bi-mortarboard-fill"></i></div>
+        <span class="logo-text">Elimu<span>Link</span></span>
+      </a>
+      <button class="sidebar-close d-lg-none" id="sidebarClose"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="sidebar-label">Main Menu</div>
+    <nav class="sidebar-nav">
+      <a href="/student/dashboard" class="sidebar-link"><i class="bi bi-grid-1x2"></i><span>Dashboard</span></a>
+      <a href="/student/mentors"   class="sidebar-link"><i class="bi bi-people"></i><span>Find Mentors</span></a>
+      <a href="/student/recommendations" class="sidebar-link">
+  <i class="bi bi-stars"></i><span>AI Recommendations</span>
+  <span class="sidebar-badge" style="background:#f0a500;color:#0d3b2e;font-size:9px;">AI</span>
+</a>
+      <a href="/student/requests"  class="sidebar-link"><i class="bi bi-send"></i><span>My Requests</span></a>
+      <a href="/student/sessions"  class="sidebar-link active"><i class="bi bi-calendar2-check"></i><span>My Sessions</span></a>
+      <a href="/student/resources" class="sidebar-link"><i class="bi bi-folder2-open"></i><span>Resources</span></a>
+    </nav>
+    <div class="sidebar-label mt-3">Account</div>
+    <nav class="sidebar-nav">
+      <a href="/student/profile" class="sidebar-link"><i class="bi bi-person-circle"></i><span>My Profile</span></a>
+      <a href="/auth/logout"     class="sidebar-link sidebar-danger"><i class="bi bi-box-arrow-left"></i><span>Log Out</span></a>
+    </nav>
+    <div class="sidebar-user">
+      <div class="sidebar-avatar"><%= user.full_name.charAt(0).toUpperCase() %></div>
+      <div>
+        <div class="sidebar-user-name"><%= user.full_name %></div>
+        <div class="sidebar-user-role">Student</div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <main class="dash-main">
+    <div class="dash-topbar">
+      <div class="d-flex align-items-center gap-3">
+        <button class="topbar-toggle d-lg-none" id="sidebarOpen"><i class="bi bi-list"></i></button>
+        <div>
+          <h5 class="topbar-title mb-0">My Sessions</h5>
+          <p class="topbar-sub mb-0">All your scheduled mentorship sessions</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="dash-content">
+      <div class="dash-card">
+        <div class="dash-card-head">
+          <h6 class="dash-card-title">Session History</h6>
+          <span class="text-muted small"><%= sessions.length %> total</span>
+        </div>
+
+        <% if (sessions.length === 0) { %>
+          <div class="empty-state py-5">
+            <i class="bi bi-calendar2"></i>
+            <p>No sessions have been booked yet. Once a mentor accepts your request, you can schedule a session.</p>
+            <a href="/student/mentors" class="btn btn-primary-custom px-4">Find a Mentor</a>
+          </div>
+        <% } else { %>
+          <div class="table-responsive">
+            <table class="dash-table">
+              <thead>
+                <tr>
+                  <th>Mentor</th>
+                  <th>Topic</th>
+                  <th>Date</th>
+                  <th>Time</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% sessions.forEach(function(s) { %>
+                  <tr>
+                    <td>
+                      <div class="d-flex align-items-center gap-2">
+                        <div class="tbl-avatar"><%= s.mentor_name.charAt(0) %></div>
+                        <div>
+                          <div class="fw-semibold"><%= s.mentor_name %></div>
+                          <div class="text-muted small"><%= s.job_title || '' %></div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="text-muted small"><%= s.topic || 'General Mentorship' %></td>
+                    <td class="text-muted small">
+                      <%= new Date(s.session_date).toLocaleDateString('en-GB',
+                          { day:'numeric', month:'short', year:'numeric' }) %>
+                    </td>
+                    <td class="text-muted small">
+                      <%= s.session_time ? s.session_time.toString().slice(0,5) : '—' %>
+                    </td>
+                    <td>
+                      <span class="badge-status badge-<%= s.status %>">
+                        <%= s.status.charAt(0).toUpperCase() + s.status.slice(1) %>
+                      </span>
+                    </td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/main.js"></script>
+</body>
+</html>
